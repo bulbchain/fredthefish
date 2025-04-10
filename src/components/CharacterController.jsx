@@ -32,18 +32,33 @@ export const CharacterController = ({
     ...props
 }) =>{
     const isDead = state.getState("dead");
-    const [animation, setAnimation] = useState("idle");
+    const [animation, setAnimation] = useState("Standup");
     const { stage } = useGameState();
     const [,get]=useKeyboardControls();
     const rb= useRef();
     const inTheAir=useRef(true);
     const landed= useRef(false);
+    const cameraPosition = useRef();
+    const cameraLookAt = useRef();
     
 
     useFrame(({camera})=>{
         if(stage==="lobby"){
             return;
         }
+
+        if ((player && !isDead) || firstNonDeadPlayer) {
+          const rbPosition = vec3(rb.current.translation());
+          if (!cameraLookAt.current) {
+            cameraLookAt.current = rbPosition;
+          }
+          cameraLookAt.current.lerp(rbPosition, 0.05);
+          camera.lookAt(cameraLookAt.current);
+          const worldPos = rbPosition;
+          cameraPosition.current.getWorldPosition(worldPos);
+          camera.position.lerp(worldPos, 0.05);
+        }
+
         if(stage!=="game"){
             return;
         }
@@ -129,20 +144,70 @@ export const CharacterController = ({
       state.setState("pos", rb.current.translation());
       state.setState("rot", rb.current.rotation());
 
+
+       // ANIMATION
+    const movement = Math.abs(vel.x) + Math.abs(vel.z);
+    if (inTheAir.current && vel.y > 2) {
+      setAnimation("Running");
+      state.setState("animation", "Running");
+    } else if (inTheAir.current && vel.y < -5) {
+      setAnimation("Searching Files High");
+      state.setState("animation", "Searching Files High");
+    } else if (movement > 1 || inTheAir.current) {
+      setAnimation("Running");
+      state.setState("animation", "Running");
+    } else {
+      setAnimation("Standing Up");
+      state.setState("animation", "Standing Up");
+    }
+
+    if (
+      rb.current.translation().y < -FLOOR_HEIGHT * FLOORS.length &&
+      !state.getState("dead")
+    ) {
+      state.setState("dead", true);
+      setState("lastDead", state.state.profile, true);
+      playAudio("Dead", true);
+    }
     });
+
+    const startingPos = state.getState("startingPos");
+  if (isDead || !startingPos) {
+    return null;
+  }
 
     return(
         <RigidBody 
         {...props} 
+        position-x={startingPos.x}
+        position-z={startingPos.z}
         colliders={false}
         canSleep={false}
-    enabledRotations={[false, true, false]}
-    ref={rb}
+        enabledRotations={[false, true, false]}
+        ref={rb}
+        onCollisionEnter={(e) => {
+         if(e.other.rigidBodyObject.name==="hexagon"){
+          inTheAir.current=false;
+          landed.current=true;
+          const curVel = rb.current.linvel();
+          curVel.y=0;
+          rb.current.setLinvel(curVel);
+         }
+
+
+        }}
+        gravityScale={stage==="game" ? 2.5 : 0}
+        name={player  ? "player" : "other"}
         >
+
+        <group ref={cameraPosition} position={[0, 8, -16]}></group>
+
           <Spongebobfish 
-          scale={0.5}
+          scale={1}
+          color={state.state.profile.color}
           name={state.state.profile.name}
-          position-y={0.2}
+          position-y={0.4}
+          animation={animation}
           />
              <CapsuleCollider args={[0.1,0.38]} position={[0,0.68,0]} />
         </RigidBody>

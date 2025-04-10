@@ -4,14 +4,19 @@ Command: npx gltfjsx@6.2.3 public/models/hexagon.glb -o src/components/Hexagon.j
 */
 
 import { useGLTF } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
 import { RigidBody } from "@react-three/rapier";
-import React, { useMemo, useRef } from "react";
+import React, { useMemo, useRef,useEffect,useState } from "react";
 import { Color } from "three";
-import { randFloat } from "three/src/math/MathUtils.js";
+import { MathUtils, randFloat, randInt } from "three/src/math/MathUtils.js";
+import { useAudioManager } from "../hooks/useAudioManager";
 
-export function Hexagon({ color, ...props }) {
+const TIME_AFTER_HIT = 600;
+
+export function Hexagon({ color,onHit,hit, ...props }) {
   const { nodes, materials } = useGLTF("/models/hexagon.glb", "draco/gltf/");
-  
+  const hexagonMaterial = useRef();
+  const [disabled, setDisabled] = useState(false);
 
   const randomizedColor =useMemo(()=>{
     const alteredColor= new Color(color);
@@ -19,14 +24,43 @@ export function Hexagon({ color, ...props }) {
     return alteredColor;
   },[color]);
 
+  useFrame((_, delta) => {
+    if (hit && !disabled) {
+      hexagonMaterial.current.opacity = MathUtils.lerp(
+        hexagonMaterial.current.opacity,
+        0,
+        delta * 1.2
+      );
+    }
+  });
+
+  useEffect(() => {
+    if (hit) {
+      setTimeout(() => {
+        setDisabled(true);
+        playAudio(`Pop${randInt(1, 5)}`);
+      }, TIME_AFTER_HIT);
+    }
+  }, [hit]);
+
+  if (disabled) {
+    return null;
+  }
+
   return (
     <RigidBody {...props} 
     type={"fixed"} 
     name="hexagon" 
     colliders="hull"
+    onCollisionEnter={(e) => {
+      if (e.other.rigidBodyObject.name === "player") {
+        onHit();
+      }
+    }}
     >
       <mesh geometry={nodes.Hexagon.geometry} material={materials.hexagon}>
         <meshStandardMaterial
+        ref={hexagonMaterial}
           {...materials.hexagon}
           color={randomizedColor}
           transparent

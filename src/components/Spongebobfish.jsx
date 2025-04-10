@@ -7,12 +7,13 @@ Source: https://sketchfab.com/3d-models/spongebob-male-fish-d2d0b64891ba4f2da356
 Title: SpongeBob Male Fish
 */
 import React, { useRef,useEffect } from 'react';
-import { useGraph } from '@react-three/fiber'
-import { useGLTF, useAnimations } from '@react-three/drei'
+import { useFrame, useGraph } from '@react-three/fiber'
+import { useGLTF, useAnimations, Text } from '@react-three/drei'
 import { SkeletonUtils } from 'three-stdlib'
 
 export function Spongebobfish({
-  animation="Searching Files High",
+  animation="Slasa Dancing",
+  color = "yellow",
   name="Player",
   ...props
   }) {
@@ -21,7 +22,7 @@ export function Spongebobfish({
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene])
   const { nodes, materials } = useGraph(clone)
   const { actions } = useAnimations(animations, group)
-
+const textRef = useRef();
   	
   useEffect(() => {
     console.log('Loaded Materials:', materials);
@@ -29,8 +30,39 @@ export function Spongebobfish({
     return () => actions?.[animation]?.fadeOut(0.24);
   }, [animation]);
  
+
+  useFrame(({ camera }) => {
+    if (textRef.current) {
+      textRef.current.lookAt(camera.position);
+    }
+  });
+
   return (
     <group ref={group} {...props} dispose={null}>
+      <group ref={textRef}>
+      <Text
+          position-y={3.8}
+          fontSize={0.5}
+          anchorX="center"
+          anchorY="middle"
+          font="fonts/PaytoneOne-Regular.ttf"
+        >
+          {name}
+          <meshBasicMaterial color="white" />
+        </Text>
+        <Text
+          position-y={3.78}
+          position-x={0.02}
+          position-z={-0.02}
+          fontSize={0.5}
+          anchorX="center"
+          anchorY="middle"
+          font="fonts/PaytoneOne-Regular.ttf"
+        >
+          {name}
+          <meshBasicMaterial color="black" />
+        </Text>
+      </group>
       <group name="Sketchfab_Scene">
         <group name="Sketchfab_model" rotation={[-Math.PI / 2, 0, 0]} scale={1.837}>
           <group name="7819c780424e42cbb6debbe9d1a04ac4fbx" rotation={[Math.PI / 2, 0, 0]} scale={0.01}>

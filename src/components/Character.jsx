@@ -27,6 +27,7 @@ export function Character({
 
   return (
     <group ref={group} {...props} dispose={null}>
+      
       <group name="Scene">
         <group name="fall_guys">
           <primitive object={nodes._rootJoint} />

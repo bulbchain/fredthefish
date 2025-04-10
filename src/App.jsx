@@ -36,7 +36,7 @@ function App() {
       <GameStateProvider>
       <Canvas shadows camera={{ position: [0, 16, 10], fov: 42 }}>
         <color attach="background" args={["#041c0b"]} />
-        <Physics debug>
+        <Physics>
         <Experience />
         </Physics>
       </Canvas>
