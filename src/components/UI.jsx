@@ -15,12 +15,25 @@ export const UI = () => {
         } transition-colors duration-1000`}
     >
       {timer>=0 &&( 
-        <h2 className="absolute right-4 top-4 text-5xl text-white font-black">
+        <h2 className="absolute right-8 top-14 text-5xl text-white font-black">
        {timer}
       </h2>
       )}
+
+        <a href="https://dexscreener.com/">
+        <img src="images/DexLogo.png" className="pointer-events-auto absolute top-8 right-20 w-4 h-4 transition duration-300 hover:scale-110 hover:rotate-5 hover:opacity-80" />
+        </a>
+
+        <a href="https://x.com/fredthefish">
+        <img src="images/xLogo.png" className="pointer-events-auto absolute top-8 right-14 w-4 h-4 transition duration-300 hover:scale-110 hover:rotate-5 hover:opacity-80" />
+        </a>
+
+        <a href="https://dexscreener.com/">
+        <img src="images/teleLogo.png" className="pointer-events-auto absolute top-8 right-8 w-4 h-4 transition duration-300 hover:scale-110 hover:rotate-5 hover:opacity-80" />
+        </a>
+
       
-      <img src="images/logo.png" className="absolute top-4 left-4 w-28" />
+      <img src="images/logo.png" className="absolute top-4 left-2 w-28" />
       {stage === "lobby" && (
         <>
           {host ? (
