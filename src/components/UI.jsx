@@ -30,10 +30,10 @@ export const UI = () => {
 
         <a href="https://dexscreener.com/">
         <img src="images/teleLogo.png" className="pointer-events-auto absolute top-8 right-8 w-4 h-4 transition duration-300 hover:scale-110 hover:rotate-5 hover:opacity-80" />
-        </a>
+        </a> 
 
       
-      <img src="images/logo.png" className="absolute top-4 left-2 w-28" />
+      <img src="images/logo.png" className="absolute top-4 left-2 w-14 h-14 md:w-28 md:h-28 sm:w-14 sm:h-14" />
       {stage === "lobby" && (
         <>
           {host ? (
