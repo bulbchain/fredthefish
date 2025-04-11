@@ -17,12 +17,11 @@ export function Spongebobfish({
   name="Player",
   ...props
   }) {
-  const group = React.useRef()
-  const { scene, animations } = useGLTF('/models/spongebobfish.glb')
+  const group = useRef();
+  const { scene, animations } = useGLTF('/models/spongebobfish.glb',"draco/gltf/");
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene])
   const { nodes, materials } = useGraph(clone)
   const { actions } = useAnimations(animations, group)
-const textRef = useRef();
   	
   useEffect(() => {
     console.log('Loaded Materials:', materials);
@@ -30,6 +29,7 @@ const textRef = useRef();
     return () => actions?.[animation]?.fadeOut(0.24);
   }, [animation]);
  
+  const textRef = useRef();
 
   useFrame(({ camera }) => {
     if (textRef.current) {
@@ -93,7 +93,7 @@ const textRef = useRef();
         </group>
       </group>
     </group>
-  )
+  );
 }
 
-useGLTF.preload('/models/spongebobfish.glb')
+useGLTF.preload('/models/spongebobfish.glb',"draco/gltf/");

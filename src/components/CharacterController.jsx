@@ -31,6 +31,7 @@ export const CharacterController = ({
     state,
     ...props
 }) =>{
+   const { playAudio } = useAudioManager();
     const isDead = state.getState("dead");
     const [animation, setAnimation] = useState("Standup");
     const { stage } = useGameState();

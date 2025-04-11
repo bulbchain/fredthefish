@@ -14,6 +14,7 @@ import { useAudioManager } from "../hooks/useAudioManager";
 const TIME_AFTER_HIT = 600;
 
 export function Hexagon({ color,onHit,hit, ...props }) {
+  const { playAudio } = useAudioManager();
   const { nodes, materials } = useGLTF("/models/hexagon.glb", "draco/gltf/");
   const hexagonMaterial = useRef();
   const [disabled, setDisabled] = useState(false);
@@ -62,7 +63,7 @@ export function Hexagon({ color,onHit,hit, ...props }) {
         <meshStandardMaterial
         ref={hexagonMaterial}
           {...materials.hexagon}
-          color={randomizedColor}
+          color={hit ? "orange" : randomizedColor}
           transparent
         />
       </mesh>
